@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UGEF Admin | Stored Inquiries & Contact Submissions</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .admin-header {
+    background: #092817;
+    color: white;
+    padding: 24px 0;
+  }
+  .admin-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .admin-title h1 {
+    font-size: 24px;
+    margin: 0;
+    color: #e5f6c8;
+  }
+  .admin-title p {
+    font-size: 13px;
+    margin: 4px 0 0;
+    color: #a9c0ad;
+  }
+  .admin-container {
+    padding: 36px 0 60px;
+  }
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 14px rgba(20,83,45,.05);
+  }
+  .stat-card .label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .stat-card .value {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--green);
+    margin-top: 6px;
+  }
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+  }
+  .search-box {
+    flex: 1;
+    min-width: 260px;
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 999px;
+    border: 1px solid #dce7dd;
+    font-size: 14px;
+    background: white;
+    outline: none;
+  }
+  .search-box input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(20,83,45,.15);
+  }
+  .btn-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .btn-sm {
+    padding: 9px 16px;
+    font-size: 13px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    border: none;
+    transition: 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-primary {
+    background: var(--green);
+    color: white;
+  }
+  .btn-primary:hover {
+    background: #0d381f;
+  }
+  .btn-secondary {
+    background: #e2ede3;
+    color: var(--green);
+  }
+  .btn-secondary:hover {
+    background: #d1e4d3;
+  }
+  .btn-danger {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+  }
+  .btn-danger:hover {
+    background: #fecaca;
+  }
+  .submissions-grid {
+    display: grid;
+    gap: 18px;
+  }
+  .submission-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 6px 20px rgba(20,83,45,.06);
+    transition: 0.2s;
+  }
+  .submission-card:hover {
+    border-color: #bbf7d0;
+    box-shadow: 0 10px 25px rgba(20,83,45,.1);
+  }
+  .submission-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .submission-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .badge-id {
+    background: #e7f5e8;
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .submission-date {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .submission-name {
+    font-size: 18px;
+    font-weight: 750;
+    color: #173c25;
+    margin: 0;
+  }
+  .submission-email {
+    font-size: 13px;
+    color: var(--green2);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .submission-subject {
+    font-size: 14px;
+    font-weight: 700;
+    color: #274332;
+    margin: 12px 0 6px;
+  }
+  .submission-message {
+    font-size: 14px;
+    color: #405448;
+    background: #fbfdfa;
+    border: 1px solid #eef3ef;
+    border-radius: 12px;
+    padding: 14px 16px;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    justify-content: flex-end;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 18px;
+    border: 1px dashed #c8ddcc;
+  }
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+  .empty-state h3 {
+    color: var(--green);
+    margin: 0 0 8px;
+    font-size: 18px;
+  }
+  .empty-state p {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0;
+  }
+</style>
+</head>
+<body>
+
+<header class="admin-header">
+  <div class="container admin-nav">
+    <div class="admin-title">
+      <h1>🌱 UGEF Inquiries Database</h1>
+      <p>Stored form submissions & visitor messages (SQLite Backend)</p>
+    </div>
+    <div>
+      <a href="index.html" class="btn light" style="font-size:13px;padding:8px 18px;">← View Website</a>
+    </div>
+  </div>
+</header>
+
+<main class="container admin-container">
+  <!-- Stats Section -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">Total Inquiries Stored</div>
+      <div class="value" id="statTotal">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Database Type</div>
+      <div class="value" style="font-size:20px;margin-top:14px;">SQLite (ugef_database.sqlite)</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Backend Status</div>
+      <div class="value" style="font-size:20px;color:#16a34a;margin-top:14px;">● Connected & Running</div>
+    </div>
+  </div>
+
+  <!-- Toolbar Section -->
+  <div class="toolbar">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="🔍 Search by name, email, subject, or message content...">
+    </div>
+    <div class="btn-group">
+      <button class="btn-sm btn-secondary" id="refreshBtn">🔄 Refresh</button>
+      <a href="/api/contacts/export" class="btn-sm btn-primary" download="ugef_contacts.csv">📥 Export to CSV</a>
+    </div>
+  </div>
+
+  <!-- Submissions Feed -->
+  <div id="submissionsList" class="submissions-grid">
+    <div class="empty-state">
+      <div class="empty-icon">⏳</div>
+      <h3>Loading inquiries...</h3>
+    </div>
+  </div>
+</main>
+
+<script>
+let allSubmissions = [];
+
+async function loadSubmissions() {
+  const container = document.getElementById('submissionsList');
+  const statTotal = document.getElementById('statTotal');
+
+  try {
+    const res = await fetch('/api/contacts');
+    if (!res.ok) throw new Error('Failed to fetch data');
+    const result = await res.json();
+    
+    allSubmissions = result.data || [];
+    statTotal.textContent = allSubmissions.length;
+
+    renderSubmissions(allSubmissions);
+  } catch (err) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <h3>Failed to load submissions</h3>
+        <p>${err.message}</p>
+        <button class="btn-sm btn-secondary" onclick="loadSubmissions()" style="margin-top:15px;">Try Again</button>
+      </div>
+    `;
+  }
+}
+
+function renderSubmissions(list) {
+  const container = document.getElementById('submissionsList');
+
+  if (!list || list.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📬</div>
+        <h3>No Inquiries Found</h3>
+        <p>When visitors submit the contact form on the website, their messages will be stored here in the database.</p>
+        <a href="index.html#contact" class="btn-sm btn-primary" style="margin-top:16px;">Test Contact Form</a>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = list.map(item => {
+    const dateFormatted = new Date(item.created_at).toLocaleString('en-IN', {
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    });
+    const safeName = escapeHtml(item.name);
+    const safeEmail = escapeHtml(item.email);
+    const safeSubject = escapeHtml(item.subject || 'General Enquiry');
+    const safeMessage = escapeHtml(item.message);
+
+    return `
+      <article class="submission-card" id="card-${item.id}">
+        <div class="submission-header">
+          <div>
+            <div class="submission-meta">
+              <span class="badge-id">#${item.id}</span>
+              <span class="submission-date">📅 ${dateFormatted}</span>
+            </div>
+            <h3 class="submission-name">${safeName}</h3>
+            <a href="mailto:${safeEmail}?subject=Re: ${encodeURIComponent(item.subject || 'UGEF Enquiry')}" class="submission-email">
+              ✉️ ${safeEmail}
+            </a>
+          </div>
+          <div>
+            <button class="btn-sm btn-danger" onclick="deleteSubmission(${item.id})">🗑 Delete</button>
+          </div>
+        </div>
+        <div class="submission-subject">Subject: ${safeSubject}</div>
+        <div class="submission-message">${safeMessage}</div>
+        <div class="card-actions">
+          <a href="mailto:${safeEmail}?subject=Re: ${encodeURIComponent(item.subject || 'UGEF Enquiry')}" class="btn-sm btn-secondary">
+            ↩ Reply via Email
+          </a>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+async function deleteSubmission(id) {
+  if (!confirm(`Are you sure you want to delete inquiry #${id}?`)) return;
+
+  try {
+    const res = await fetch(`/api/contacts/${id}`, { method: 'DELETE' });
+    const result = await res.json();
+    if (res.ok && result.success) {
+      const card = document.getElementById(`card-${id}`);
+      if (card) card.remove();
+      allSubmissions = allSubmissions.filter(item => item.id !== id);
+      document.getElementById('statTotal').textContent = allSubmissions.length;
+      if (allSubmissions.length === 0) renderSubmissions([]);
+    } else {
+      alert(result.error || 'Failed to delete inquiry');
+    }
+  } catch (err) {
+    alert('Error deleting: ' + err.message);
+  }
+}
+
+// Search Filter
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  const query = e.target.value.toLowerCase().trim();
+  if (!query) {
+    renderSubmissions(allSubmissions);
+    return;
+  }
+  const filtered = allSubmissions.filter(item => {
+    return (item.name && item.name.toLowerCase().includes(query)) ||
+           (item.email && item.email.toLowerCase().includes(query)) ||
+           (item.subject && item.subject.toLowerCase().includes(query)) ||
+           (item.message && item.message.toLowerCase().includes(query));
+  });
+  renderSubmissions(filtered);
+});
+
+document.getElementById('refreshBtn').addEventListener('click', loadSubmissions);
+
+// Initial Load
+loadSubmissions();
+</script>
+
+</body>
+</html>

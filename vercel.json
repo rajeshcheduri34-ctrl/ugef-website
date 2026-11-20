@@ -1,0 +1,7 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/contacts/export", "destination": "/api/export" },
+    { "source": "/api/contacts/:id", "destination": "/api/contact?id=:id" }
+  ]
+}

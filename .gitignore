@@ -1,0 +1,5 @@
+node_modules/
+.vercel/
+ugef_database.sqlite
+*.log
+.DS_Store
